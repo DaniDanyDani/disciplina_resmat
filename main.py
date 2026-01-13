@@ -50,33 +50,39 @@ plt.plot(M[:,0], M[:,1], 'b', M[:,0], y_min, 'r')
 xt1 = 0
 xt2 = 290
 xt3 = 680 # TODO: ADICIONADO DE EXEMPLO
+xt4 = 1070 # TODO: ADICIONADO DE EXEMPLO
 H = 20
 
 # Encontra os índices correspondentes em M
 i_t1 = np.where(M[:,0] >= xt1)[0][0]
 i_t2 = np.where(M[:,0] >= xt2)[0][0]
 i_t3 = np.where(M[:,0] >= xt3)[0][0] # TODO: ADICIONADO DE EXEMPLO
+i_t4 = np.where(M[:,0] >= xt4)[0][0] # TODO: ADICIONADO DE EXEMPLO
 
 # Corrige as coordenadas x das torres
 xt1 = M[i_t1, 0]
 xt2 = M[i_t2, 0]
 xt3 = M[i_t3, 0] # TODO: ADICIONADO DE EXEMPLO
+xt4 = M[i_t4, 0] # TODO: ADICIONADO DE EXEMPLO
 
 # Calcula as coordenadas y das torres com a altura H adicionada
 yt1 = M[i_t1, 1] + H
 yt2 = M[i_t2, 1] + H
 yt3 = M[i_t3, 1] + H # TODO: ADICIONADO DE EXEMPLO
+yt4 = M[i_t4, 1] + H # TODO: ADICIONADO DE EXEMPLO
 
 # Define as posições das torres T1 e T2
 T1 = np.array([[xt1, M[i_t1, 1]], [xt1, yt1]])
 T2 = np.array([[xt2, M[i_t2, 1]], [xt2, yt2]])
-T3 = np.array([[xt3, M[i_t3, 1]], [xt3, yt3]])
+T3 = np.array([[xt3, M[i_t3, 1]], [xt3, yt3]])# TODO: ADICIONADO DE EXEMPLO
+T4 = np.array([[xt4, M[i_t4, 1]], [xt4, yt4]])# TODO: ADICIONADO DE EXEMPLO
 
 # Plota as torres na figura
 plt.figure(1)
 plt.plot(T1[:,0], T1[:,1], 'k')
 plt.plot(T2[:,0], T2[:,1], 'k')
 plt.plot(T3[:,0], T3[:,1], 'k') # TODO: ADICIONADO DE EXEMPLO
+plt.plot(T4[:,0], T4[:,1], 'k') # TODO: ADICIONADO DE EXEMPLO
 
 # Definição dos parâmetros do cabo
 Tnom = 140.6e3  # Tração nominal
@@ -152,5 +158,40 @@ Vtmax = Tmax * np.ones(len(catenaria_x_real))
 plt.figure(2)
 plt.xlabel("x[m]")
 plt.ylabel("Tração [N]")
-plt.plot(catenaria_x_real, T, 'b', catenaria_x_real, Vtmax, 'r')
+plt.plot(catenaria_x_real, T, 'r', catenaria_x_real, Vtmax, 'r')
+# =========================== VÃO 1 ==============================
+
+# =========================== VÃO 2 ============================== # TODO: ADICIONADO DE EXEMPLO
+T0 = 0.96 * Tmax  # Tração inicial
+# Ajustar a posição da torre á direita (ajuste grosso)
+# Ajustar o T0 (ajuste fino)
+
+# Calcula x0 (coordenada x do ponto mais baixo da catenária)
+param = (xt3, xt4, yt3, yt4, T0, ms)
+x0 = fsolve(equation, xt3, args=param)[0]
+
+# Calcula y0 (coordenada y do ponto mais baixo da catenária)
+y0 = yt3 - T0/ms*(math.cosh((ms/T0)*(xt3-x0))-1)
+
+# Define os pontos x e y da catenária no intervalo de xt1 a xt2
+catenaria_x = np.arange(xt3-x0, xt4-x0, 1)
+catenaria_y = np.array([T0/ms*(math.cosh(ms/T0*x)-1) for x in catenaria_x])
+
+# Ajusta os pontos da catenária para o sistema de coordenadas real
+catenaria_x_real = catenaria_x + x0
+catenaria_y_real = catenaria_y + y0
+
+# Plota a catenária na figura
+plt.figure(1)
+plt.plot(catenaria_x_real, catenaria_y_real, 'm')
+
+# Gráfico da tração no cabo
+T = T0 + catenaria_y * ms
+Vtmax = Tmax * np.ones(len(catenaria_x_real))
+
+# Cria a figura para o gráfico da tração
+plt.figure(2)
+plt.xlabel("x[m]")
+plt.ylabel("Tração [N]")
+plt.plot(catenaria_x_real, T, 'g', catenaria_x_real, Vtmax, 'r')
 # =========================== VÃO 1 ==============================
