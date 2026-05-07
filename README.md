@@ -1,2 +1,1 @@
-# disciplina_resmat
-Projeto desenvolvido para disciplina de Resistência dos materiais para prova final
+ENE083-2025.3-B - FUNDAMENTOS DE RESISTÊNCIA DOS MATERIAIS
